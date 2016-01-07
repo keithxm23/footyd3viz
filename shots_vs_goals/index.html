@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>D3 Demo: SVG with pretty colors</title>
+    <script type="text/javascript" src="../d3/d3.v3.js"></script>
+    <link rel="stylesheet" type="text/css" href="clublogos.css">
+    <style type="text/css">
+      .axis path,
+      .axis line {
+        fill: none;
+        stroke: black;
+        shape-rendering: crispEdges;
+      }
+
+      .axis text {
+        font-family: sans-serif;
+        font-size: 11px;
+      }
+
+    </style>
+  </head>
+  <body>
+    <script type="text/javascript">
+
+      //Width and height
+      //http://bl.ocks.org/mbostock/3019563
+      var margin = {top: 20, right: 20, bottom: 20, left: 20},
+          padding = {top: 60, right: 60, bottom: 60, left: 60},
+          outerWidth = 960,
+          outerHeight = 650,
+          innerWidth = outerWidth - margin.left - margin.right,
+          innerHeight = outerHeight - margin.top - margin.bottom,
+          width = innerWidth - padding.left - padding.right,
+          height = innerHeight - padding.top - padding.bottom;
+
+
+      //Create SVG element
+      var svg = d3.select("body")
+                  .append("svg")
+                  .attr("width", outerWidth)
+                  .attr("height", outerHeight)
+                  .append("g")
+                  .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+                ;
+
+      //Scales
+      var xScale = d3.scale.linear()
+                           .domain([5,20])
+                           .range([10,550])
+                   ;
+
+
+      var yScale = d3.scale.linear()
+                           .domain([0.7,2.2])
+                           .range([550,10])
+                   ;
+
+      //Axes
+      var numberOfTicks = 6;
+      var xAxis = d3.svg.axis()
+                        .scale(xScale)
+                        .orient("bottom")
+                        .ticks(numberOfTicks)
+                  ;
+
+      var yAxis = d3.svg.axis()
+                        .scale(yScale)
+                        .orient("left")
+                        .ticks(numberOfTicks)
+                  ;
+
+
+      //Data
+      /*
+         select count(*), t.name as team, sum(ft_goals) as goals, sum(shots) as shots, 
+         cast(sum(ft_goals) as float)/cast(count(*) as float) as goals_per_game,  
+         cast(sum(shots) as float)/cast(count(*) as float) as shots_per_game 
+         from performances p 
+         join teams t on p.team_id=t.id 
+         join games g on p.game_id = g.id 
+         where g.season=20152016 
+         group by p.team_id;
+      */
+      d3.csv("shots_goals_pergame.csv", function(error, data) {
+          // change string (from CSV) into number format
+          data.forEach(function(d) {
+            d.goals_pergame = d.Goals / d.Games;
+            d.shots_pergame = d.Shots / d.Games;
+            console.log(d);
+          });
+
+          svg.selectAll("circle")
+            .data(data)
+            .enter()
+            .append("circle")
+            .attr("cx", function(d) { return xScale(d.shots_pergame) })
+            .attr("cy", function(d) { return yScale(d.goals_pergame) })
+            .attr("r", 5)
+            .attr("class", function(d) { return d.Code })
+          ;
+
+          svg.selectAll("text")
+            .data(data)
+            .enter()
+            .append("text")
+            .text(function(d) {
+                return "__" +d.Code;
+                //return "Shots: "+d.shots_pergame+"/nGoals: "+d.goals_pergame;
+                })
+            .attr("x", function(d) { return xScale(d.shots_pergame) })
+            .attr("y", function(d) { return yScale(d.goals_pergame) })
+            .attr("font-family", "sans-serif")
+            .attr("font-size", "11px")
+            .attr("fill", "red")
+          ;
+
+          //
+          svg.append("g")
+            .attr("class", "axis")
+            .attr("transform", "translate(0, "+(height+padding.top)+")")
+            .call(xAxis)
+          ;
+
+          svg.append("g")
+            .attr("class", "axis")
+            .attr("transform", "translate("+margin.right+",0)")
+            .call(yAxis)
+          ;
+
+
+          //Gridlines
+          svg.selectAll("line.horizontalGrid")
+            .data(yScale.ticks(15))
+            .enter()
+            .append("line")
+            .attr(
+                {
+                  "class":"horizontalGrid",
+                  "x1" : margin.right,
+                  "x2" : width-padding.right-margin.right,
+                  "y1" : function(d){ return yScale(d);},
+                  "y2" : function(d){ return yScale(d);},
+                  "fill" : "none",
+                  "shape-rendering" : "crispEdges",
+                  "stroke" : "gray",
+                  "opacity" : 0.2,
+                  "stroke-width" : "1px"
+                })
+          ;
+
+
+          svg.selectAll("line.verticalGrid")
+            .data(xScale.ticks(8))
+            .enter()
+            .append("line")
+            .attr(
+                {
+                  "class":"verticalGrid",
+                  "x1" : function(d){ return xScale(d);},
+                  "x2" : function(d){ return xScale(d);},
+                  "y1" : height+padding.top,
+                  "y2" : margin.top,
+                  "fill" : "none",
+                  "shape-rendering" : "crispEdges",
+                  "stroke" : "gray",
+                  "opacity" : 0.2,
+                  "stroke-width" : "1px"
+                })
+          ;
+      });
+
+    </script>
+
+  </body>
+</html>
