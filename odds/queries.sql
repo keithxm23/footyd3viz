@@ -33,16 +33,16 @@ left join (
   group by t.id
 ) L2W on L2W.team_id = t.id
 
-left join (
-  select t.id as team_id, count(*) as d2w_count
-  from performances p
-  join games g on p.game_id = g.id
-  join teams t on t.id = p.team_id
-  where g.season=20152016
-  and p.odds_result = 'D'
-  and p.ft_result = 'W'
-  group by t.id
-) D2W on D2W.team_id = t.id
+#left join (
+#  select t.id as team_id, count(*) as d2w_count
+#  from performances p
+#  join games g on p.game_id = g.id
+#  join teams t on t.id = p.team_id
+#  where g.season=20152016
+#  and p.odds_result = 'D'
+#  and p.ft_result = 'W'
+#  group by t.id
+#) D2W on D2W.team_id = t.id
 
 left join (
   select t.id as team_id, count(*) as l2d_count
@@ -66,16 +66,16 @@ left join (
   group by t.id
 ) W2D on W2D.team_id = t.id
 
-left join (
-  select t.id as team_id, count(*) as d2l_count
-  from performances p
-  join games g on p.game_id = g.id
-  join teams t on t.id = p.team_id
-  where g.season=20152016
-  and p.odds_result = 'D'
-  and p.ft_result = 'L'
-  group by t.id
-) D2L on D2L.team_id = t.id
+#left join (
+#  select t.id as team_id, count(*) as d2l_count
+#  from performances p
+#  join games g on p.game_id = g.id
+#  join teams t on t.id = p.team_id
+#  where g.season=20152016
+#  and p.odds_result = 'D'
+#  and p.ft_result = 'L'
+#  group by t.id
+#) D2L on D2L.team_id = t.id
 
 left join (
   select t.id as team_id, count(*) as w2l_count
