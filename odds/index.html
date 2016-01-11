@@ -9,18 +9,17 @@
       .axis path,
       .axis line {
         fill: none;
-        stroke: black;
-        shape-rendering: crispEdges;
+        stroke: none;
+        /*shape-rendering: crispEdges;*/
       }
 
       .axis text {
-        font-family: sans-serif;
-        font-size: 11px;
+        font-size: 14px;
       }
 
       #tooltip {
         position: absolute;
-        width: 250px;
+        width: auto;
         height: auto;
         padding: 10px;
         background-color: white;
@@ -35,14 +34,19 @@
       }
 
       #tooltip.hidden {
-              display: none;
+        display: none;
       }
 
       #tooltip p {
-              margin: 0;
-              font-family: sans-serif;
-              font-size: 16px;
-              line-height: 20px;
+        margin: 0;
+        /*font-family: sans-serif;*/
+        font-size: 16px;
+        line-height: 20px;
+      }
+
+      .legend, .axis, .labels, #tooltip{
+        font-family: Helvetica Neue;
+        font-weight: 300;
       }
 
       #csvdata{display: none;}
@@ -66,33 +70,39 @@
           yLegend = 9,
           legendWidth = 18,
           legendHeight = 18,
-          yLabelPadding = 15
+          yLabelPadding = 15,
+          xTicksPadding = 15
           ;
 
-      var hoverColor = "hsl(220, 70%, 65%)";
       var xColumn = "team";
       var yData = [
         {key: "l2w", color: "hsl(120, 70%, 65%)",
+          colorHighlighted: "hsl(120, 100%, 65%)",
           legend: "Unexpected win on predicted loss",
           tooltip: " unexpected win(s) on predicted loss(es)"
         },
         // {key: "d2w", color: "hsl(96, 70%, 65%)",
+        //   colorHighlighted: "hsl(96, 100%, 65%)",
         //   legend: "Unexpected win on predicted draw",
         //   tooltip: " unexpected win(s) on predicted draw(s)"
         // },
         {key: "l2d", color: "hsl(72, 70%, 65%)",
+          colorHighlighted: "hsl(72, 100%, 65%)",
           legend: "Unexpected draw on predicted loss",
           tooltip: " unexpected draw(s) on predicted loss(es)"
         },
         {key: "w2d", color: "hsl(48, 70%, 65%)",
+          colorHighlighted: "hsl(48, 100%, 65%)",
           legend: "Unexpected draw on predicted win",
           tooltip: " unexpected draw(s) on predicted win(s)"
         },
         // {key: "d2l", color: "hsl(24, 70%, 65%)",
+        //   colorHighlighted: "hsl(24, 100%, 65%)",
         //   legend: "Unexpected loss on predicted draw",
         //   tooltip: " unexpected loss(es) on predicted draw(s)"
         // },
         {key: "w2l", color: "hsl(0, 70%, 65%)",
+          colorHighlighted: "hsl(0, 100%, 65%)",
           legend: "Unexpected loss on predicted win",
           tooltip: " unexpected loss(es) on predicted win(s)"
         }
@@ -120,8 +130,7 @@
       var xAxisG = svg.append("g")
         .attr("class", "x axis")
         .attr("transform",
-          "translate("+ margin.left +"," +
-            (innerHeight-padding.bottom-margin.bottom) + ")")
+          "translate("+ margin.left +"," + (height + xTicksPadding) + ")")
         ;
 
       var xAxis = d3.svg.axis()
@@ -191,7 +200,7 @@
           .on("mouseover", function(d) {
             //Highlight this bar on hover
             d3.select(this)
-            .attr("fill", hoverColor);
+            .attr("fill", yData.filter(function(obj){return obj.key==d.key})[0].colorHighlighted);
 
             //Get this bar's x/y values, then augment for the tooltip
             var xPosition = parseFloat(d3.select(this).attr("x")) + xScale.rangeBand() / 2;
@@ -228,7 +237,6 @@
           ;
 
         rects.exit().remove();
-
 
         //Labels
         // Add a group for each text
@@ -268,8 +276,6 @@
 
         labels.exit().remove();
 
-
-
         //legend
         var legend = svg.selectAll(".legend")
           .data(yData);
@@ -293,7 +299,6 @@
           .text(function(d) { return d.legend; });
 
         legend.exit().remove();
-
 
       }; //end of render function
 
