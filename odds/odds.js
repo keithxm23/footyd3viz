@@ -52,13 +52,19 @@ var yData = [
   }
 ]
 
-function render(data){
+function render(data, marker){
   //Create SVG element
-  var svg = d3.select("body")
+  var svg = d3.select(marker)
     .append("svg")
     .attr("width", outerWidth)
     .attr("height", outerHeight)
     ;
+
+  var pageOffset = svg[0][0].getBoundingClientRect();
+  //http://stackoverflow.com/questions/25630035/javascript-getboundingclientrect-changes-while-scrolling
+  var yScrollOffset = window.scrollY;
+  var xScrollOffset = window.scrollX;
+
   var g = svg.append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
     ;
@@ -84,7 +90,7 @@ function render(data){
     ;
 
 
-    
+
   // change number-strings (from CSV) into nums and transpose data for
   // the stack() method to consume
   var layers = yData.map(function(y){return y.key})
@@ -149,8 +155,9 @@ function render(data){
       .attr("fill", yData.filter(function(obj){return obj.key==d.key})[0].colorHighlighted);
 
       //Get this bar's x/y values, then augment for the tooltip
-      var xPosition = parseFloat(d3.select(this).attr("x")) + xScale.rangeBand() / 2;
-      var yPosition = parseFloat(d3.select(this).attr("y"));
+      var xPosition = pageOffset.left + parseFloat(d3.select(this).attr("x")) + xScale.rangeBand() / 2 + xScrollOffset;
+      var yPosition = pageOffset.top + parseFloat(d3.select(this).attr("y")) + yScrollOffset;
+
       //Update the tooltip position and value
       d3.select("#tooltip")
         .style("left", xPosition + "px")
@@ -165,7 +172,6 @@ function render(data){
             html += "<td>-</td>";
             html += "<td>"+or[3]+"</td>";
             html += "<td>"+or[1]+"</td>";
-            // html += "<p>"+or[0]+"\t"+or[2]+"\t-\t"+or[3]+"\t"+or[1]+"</p>";
             html += "</tr>";
 
           })

@@ -15,7 +15,7 @@
       window.onload = function() {
         var raw = d3.select("#csvdata").text();
         var parsedOddsData = d3.csv.parse(raw);
-        render(parsedOddsData);
+        render(parsedOddsData, "body");
       };
     </script>
   </head>
@@ -25,7 +25,6 @@
     <div id="tooltip" class="hidden">
         <table id="value">
         </table>
-        <!-- <p><span id="value">100</span></p> -->
     </div>
 
 <pre id="csvdata">
