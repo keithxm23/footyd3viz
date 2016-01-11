@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>D3 Demo: SVG with pretty colors</title>
     <script type="text/javascript" src="../d3/d3.v3.js"></script>
+    <script type="text/javascript" src="oddResults.js"></script>
     <style type="text/css">
       .axis path,
       .axis line {
@@ -17,10 +18,9 @@
         font-size: 11px;
       }
 
-
       #tooltip {
         position: absolute;
-        width: 200px;
+        width: 250px;
         height: auto;
         padding: 10px;
         background-color: white;
@@ -201,7 +201,17 @@
               .style("left", xPosition + "px")
               .style("top", yPosition + "px")
               .select("#value")
-              .text(d.y + yData.filter(function(obj){return obj.key==d.key})[0].tooltip);
+              .html(function(){
+                console.log(oddResults[d.x][d.key]);
+                html = "";
+                oddResults[d.x][d.key].forEach(function(or){
+                  html += "<p>"+or[0]+"\t"+or[2]+"\t-\t"+or[3]+"\t"+or[1]+"</p>"
+
+                })
+                return html;
+                // return d.y + yData.filter(function(obj){return obj.key==d.key})[0].tooltip;
+              })
+              ;
             //Show the tooltip
             d3.select("#tooltip").classed("hidden", false);
           })
@@ -289,15 +299,11 @@
 
       //Load from CSV File
       // d3.csv("odds_beaten.csv", render);
-
       //OR
-
       //Load from embedded csv in html
       window.onload = function() {
         var raw = d3.select("#csvdata").text();
-        console.log(raw);
         var parsedOddsData = d3.csv.parse(raw);
-        console.log(parsedOddsData);
         render(parsedOddsData);
       };
 
