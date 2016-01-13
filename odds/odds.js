@@ -60,7 +60,7 @@ function render(data, marker){
     .attr("height", outerHeight)
     ;
 
-  var pageOffset = svg[0][0].getBoundingClientRect();
+  var pageOffset = svg.node().getBoundingClientRect();
   //http://stackoverflow.com/questions/25630035/javascript-getboundingclientrect-changes-while-scrolling
   var yScrollOffset = window.scrollY;
   var xScrollOffset = window.scrollX;
